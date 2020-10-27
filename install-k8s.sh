@@ -1,5 +1,5 @@
-KUBEADM_VERSION="1.16.2"
-KUBERNETES_VERSION="1.16.2"
+KUBEADM_VERSION="1.19.0"
+KUBERNETES_VERSION="1.19.0"
 
 # from https://kubernetes.io/docs/setup/independent/install-kubeadm/
 

@@ -32,8 +32,8 @@ Vagrant.configure("2") do |config|
     master.vm.box = "centos/7"
     master.vm.provider "hyperv" do |hv|
       hv.vmname = "K8s-master"
-      hv.memory = 1024
-      hv.maxmemory = 2048
+      hv.memory = 2048
+      hv.maxmemory = 4096
       hv.cpus = 2
       hv.linked_clone = true
     end
@@ -72,19 +72,25 @@ Vagrant.configure("2") do |config|
   end
 
 
-  config.vm.define "win1" do |win1|
-    win1.vm.box = "WindowsServer2019Docker"
-    win1.vm.provider "hyperv" do |hv|
-      hv.vmname = "K8s-win1"
-      hv.memory = 4096
-      hv.maxmemory = 8192
+  config.vm.define "nodeb" do |nodeb|
+    nodeb.vm.box = "centos/7"
+    nodeb.vm.provider "hyperv" do |hv|
+      hv.vmname = "K8s-nodeb"
+      hv.memory = 1024
+      hv.maxmemory = 2048
       hv.cpus = 2
       hv.linked_clone = true
     end
+    nodeb.vm.synced_folder ".", "/vagrant", type: "rsync",
+      rsync__exclude: ".git/"
 
-    win1.vm.network "public_network", bridge: "Default Switch"
-    win1.vm.hostname = "win1"
-    # win1.vm.provision "shell", path: "scripts needed"
+    nodeb.vm.hostname = "nodeb.localdomain"
+    nodeb.vm.network "public_network", bridge: "Default Switch"
+
+    nodeb.vm.provision "shell", path: "disable-swap.sh"
+    nodeb.vm.provision "shell", path: "install-docker.sh"
+    nodeb.vm.provision "shell", path: "install-k8s.sh"
+    nodeb.vm.provision "shell", inline: "sh /vagrant/tmp/join.sh"
   end
 
 end
